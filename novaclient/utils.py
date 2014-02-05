@@ -33,6 +33,18 @@ env = cliutils.env
 
 VALID_KEY_REGEX = re.compile(r"[\w\.\- :]+$", re.UNICODE)
 
+def add_arg(f, *args, **kwargs):
+    """Bind CLI arguments to a shell.py `do_foo` function."""
+
+    if not hasattr(f, 'arguments'):
+        f.arguments = []
+
+    # NOTE(sirp): avoid dups that can occur when the module is shared across
+    # tests.
+    if (args, kwargs) not in f.arguments:
+        # Because of the semantics of decorator composition if we just append
+        # to the options list positional options will appear to be backwards.
+        f.arguments.insert(0, (args, kwargs))
 
 def add_resource_manager_extra_kwargs_hook(f, hook):
     """Add hook to bind CLI arguments to ResourceManager calls.
